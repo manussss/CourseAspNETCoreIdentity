@@ -1,7 +1,10 @@
+using Identity.WebApp.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddIdentityCore<User>(options => { });
 
 var app = builder.Build();
 
