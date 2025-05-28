@@ -1,16 +1,19 @@
-using Identity.WebApp.Models;
-using Identity.WebApp.Stores;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentityCore<User>(options => { });
-builder.Services.AddScoped<IUserStore<User>, UserStore>();
+builder.Services.AddIdentityCore<IdentityUser>(options => { });
+builder.Services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, IdentityDbContext>>();
 builder.Services
     .AddAuthentication("cookies")
     .AddCookie("cookies", options => options.LoginPath = "/Home/Login");
+
+builder.Services
+    .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityWebApp")));
 
 var app = builder.Build();
 
