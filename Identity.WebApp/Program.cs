@@ -1,4 +1,6 @@
 using System.Reflection;
+using Identity.WebApp.Data;
+using Identity.WebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,15 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentityCore<IdentityUser>(options => { });
-builder.Services.AddScoped<IUserStore<IdentityUser>, UserOnlyStore<IdentityUser, IdentityDbContext>>();
+builder.Services.AddIdentityCore<User>(options => { });
+builder.Services.AddScoped<IUserStore<User>, UserOnlyStore<User, UserDbContext>>();
 builder.Services
     .AddAuthentication("cookies")
     .AddCookie("cookies", options => options.LoginPath = "/Home/Login");
 
 var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 builder.Services
-    .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityWebApp"), sql => sql.MigrationsAssembly(migrationAssembly)));
+    .AddDbContext<UserDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityWebApp"), sql => sql.MigrationsAssembly(migrationAssembly)));
 
 var app = builder.Build();
 

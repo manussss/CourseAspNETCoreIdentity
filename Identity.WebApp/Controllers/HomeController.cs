@@ -11,9 +11,9 @@ namespace Identity.WebApp.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<User> _userManager;
 
-    public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager)
+    public HomeController(ILogger<HomeController> logger, UserManager<User> userManager)
     {
         _logger = logger;
         _userManager = userManager;
@@ -38,7 +38,7 @@ public class HomeController : Controller
 
             if (user is null)
             {
-                user = new IdentityUser()
+                user = new User()
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserName = model.UserName
