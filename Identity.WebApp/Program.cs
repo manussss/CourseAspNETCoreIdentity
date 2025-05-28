@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +13,9 @@ builder.Services
     .AddAuthentication("cookies")
     .AddCookie("cookies", options => options.LoginPath = "/Home/Login");
 
+var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 builder.Services
-    .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityWebApp")));
+    .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityWebApp"), sql => sql.MigrationsAssembly(migrationAssembly)));
 
 var app = builder.Build();
 
