@@ -6,4 +6,5 @@ public class User : IdentityUser
 {
     public string OrganizationId { get; set; }
     public string CompleteName { get; set; }
+    public string Member { get; set; } = "Member";
 }
