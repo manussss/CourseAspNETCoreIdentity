@@ -12,11 +12,16 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<User> _userManager;
+    private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
 
-    public HomeController(ILogger<HomeController> logger, UserManager<User> userManager)
+    public HomeController(
+        ILogger<HomeController> logger,
+        UserManager<User> userManager,
+        IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory)
     {
         _logger = logger;
         _userManager = userManager;
+        _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
     }
 
     public IActionResult Index()
@@ -68,11 +73,9 @@ public class HomeController : Controller
 
             if (user is not null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                var identity = new ClaimsIdentity("cookies");
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
-                identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+                var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
-                await HttpContext.SignInAsync("cookies", new ClaimsPrincipal(identity));
+                await HttpContext.SignInAsync("Identity.Application", principal);
 
                 return RedirectToAction("About");
             }

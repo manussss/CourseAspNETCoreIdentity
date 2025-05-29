@@ -9,11 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentityCore<User>(options => { });
-builder.Services.AddScoped<IUserStore<User>, UserOnlyStore<User, UserDbContext>>();
 builder.Services
-    .AddAuthentication("cookies")
-    .AddCookie("cookies", options => options.LoginPath = "/Home/Login");
+    .AddIdentity<User, IdentityRole>(options => { })
+    .AddEntityFrameworkStores<UserDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Login");
 
 var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 builder.Services
