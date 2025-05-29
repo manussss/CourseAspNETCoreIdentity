@@ -1,8 +1,8 @@
 using System.Reflection;
 using Identity.WebApp.Data;
+using Identity.WebApp.Factories;
 using Identity.WebApp.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +11,14 @@ builder.Services.AddControllersWithViews();
 
 builder.Services
     .AddIdentity<User, IdentityRole>(options => { })
-    .AddEntityFrameworkStores<UserDbContext>();
+    .AddEntityFrameworkStores<UserDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Login");
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, UserClaimsPrincipalFactory>();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options => options.TokenLifespan = TimeSpan.FromHours(3));
 
 var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 builder.Services
