@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Security.Claims;
 using Identity.WebApp.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,18 +9,18 @@ namespace Identity.WebApp.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly UserManager<User> _userManager;
     private readonly IUserClaimsPrincipalFactory<User> _userClaimsPrincipalFactory;
+    private readonly SignInManager<User> _signInManager;
 
     public HomeController(
-        ILogger<HomeController> logger,
         UserManager<User> userManager,
-        IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory)
+        IUserClaimsPrincipalFactory<User> userClaimsPrincipalFactory,
+        SignInManager<User> signInManager)
     {
-        _logger = logger;
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+        _signInManager = signInManager;
     }
 
     public IActionResult Index()
@@ -69,16 +68,21 @@ public class HomeController : Controller
     {
         if (ModelState.IsValid)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName);
+            // var user = await _userManager.FindByNameAsync(model.UserName);
 
-            if (user is not null && await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
+            // if (user is not null && await _userManager.CheckPasswordAsync(user, model.Password))
+            // {
+            //     var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
-                await HttpContext.SignInAsync("Identity.Application", principal);
+            //     await HttpContext.SignInAsync("Identity.Application", principal);
 
+            //     return RedirectToAction("About");
+            // }
+
+            var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+
+            if (signInResult.Succeeded)
                 return RedirectToAction("About");
-            }
 
             ModelState.AddModelError("", "Usuário ou senha inválidos");
         }
