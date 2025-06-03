@@ -10,9 +10,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services
-    .AddIdentity<User, IdentityRole>(options => { })
+    .AddIdentity<User, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequiredLength = 8;
+
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.AllowedForNewUsers = true;
+    })
     .AddEntityFrameworkStores<UserDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddPasswordValidator<PasswordValidator<User>>();
 
 builder.Services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Login");
 
