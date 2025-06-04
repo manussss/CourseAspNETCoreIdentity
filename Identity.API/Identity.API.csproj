@@ -24,4 +24,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Identity.Infra/Identity.Infra.csproj" />
+  </ItemGroup>
+
 </Project>
